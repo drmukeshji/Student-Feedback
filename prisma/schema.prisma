@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// role: STUDENT | ALUMNI | FACULTY | ADMIN | EMPLOYER | PARENT | STAFF
+model User {
+  id             String     @id @default(cuid())
+  name           String
+  email          String     @unique
+  passwordHash   String
+  role           String
+  phone          String?
+  department     String?
+  program        String?
+  enrollmentNo   String?
+  designation    String?
+  organization   String?
+  wardName       String?
+  graduationYear Int?
+  graduatedAt    DateTime?
+  active         Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  responses      Response[]
+}
+
+model Response {
+  id        String   @id @default(cuid())
+  formId    String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// JSON-encoded map of field id -> answer
+  answers   String
+  createdAt DateTime @default(now())
+
+  @@index([formId])
+  @@index([userId])
+}
